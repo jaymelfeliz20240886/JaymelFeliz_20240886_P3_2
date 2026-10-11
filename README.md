@@ -1,6 +1,9 @@
 # 🛡️ Laboratorio de Seguridad Perimetral y Segmentación con FortiGate
 
-▶️ [**Video Demostrativo del Laboratorio**]([INSERTE_ENLACE_AQUI]) *(Demostración de conectividad, pruebas de RDP y acceso al portal RDWeb)*
+▶️ https://youtu.be/xMtPBefMZzU
+
+<img width="870" height="522" alt="imagen" src="https://github.com/user-attachments/assets/b87f1184-1869-49d0-bb81-7d2648e2b95a" />
+
 
 ## 📑 Índice
 
@@ -29,11 +32,16 @@ El entorno está desplegado en GNS3 y se divide en tres zonas lógicas principal
 * **Zona LAN (Port 4):** Red de usuarios locales segmentada físicamente en el puerto 4. Aquí se encuentran:
   * `Webterm Privilegiado` (CONPRIV)
   * `Webterm Sin Privilegios` (SINPRIV)
+ <img width="351" height="234" alt="imagen" src="https://github.com/user-attachments/assets/076a609e-6d02-4772-a143-df612217e53e" />
+
+  * 
 * **Zona DMZ Segmentada (Ports 2 y 3):** Zona de servidores. Por diseño estricto de seguridad, los servidores están en puertos físicos distintos del FortiGate para forzar la inspección del tráfico inter-servidor:
   * `Jump Server` (Bastion Host) en el `port3`.
   * `Web Server` (IIS / RemoteApp) en el `port2`.
+    <img width="414" height="255" alt="imagen" src="https://github.com/user-attachments/assets/8fc2ec51-dc44-4232-b8c9-93f512edfca5" />
 
-## 3. Tabla de Direccionamiento IP
+
+## 3. Tabla de Direccionamiento IP basado en matricula (20240886)
 
 | Dispositivo / Interfaz | Rol | Dirección IP | Máscara de Subred | Puerta de Enlace (Gateway) |
 | :--- | :--- | :--- | :--- | :--- |
@@ -67,27 +75,40 @@ Para garantizar la gestión centralizada de la seguridad a través del FortiGate
 | ID | Nombre de Política | Interfaz Entrada | Interfaz Salida | Origen | Destino | Servicio | Acción | NAT |
 | :-: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
 | 1 | `Acceso_Privilegiado_Jump` | port4 | port3, port2 | Webterm_Priv (10.24.86.20) | JumpServer, WebServer | HTTPS, HTTP, RDP | ACCEPT | **ON** |
+<img width="940" height="937" alt="imagen" src="https://github.com/user-attachments/assets/d6f454b3-8d4a-4cc8-9e9a-ba7988a0b8cf" />
+
 | 2 | `Jump_to_Web` | port3 | port2 | JumpServer (10.24.8.10) | WebServer (10.24.8.2) | HTTPS, HTTP, RDP | ACCEPT | OFF |
-| 3 | `Deny_SSH_SinPrivilegios` | port4 | port3, port2 | Webterm_SinPriv | Any | SSH | DENY | OFF |
+<img width="946" height="900" alt="imagen" src="https://github.com/user-attachments/assets/3986b83e-6ceb-4257-b3ff-fc15bfd06e1d" />
+
+| 3 | `Deny_SSH_SinPrivilegios` | port4 | port3, port2 | Webterm_SinPriv | Any | SSH | DENY | OFF |<img width="1014" height="895" alt="imagen" src="https://github.com/user-attachments/assets/38e78bd6-4add-4ba0-afc1-048df2e49f45" />
+<img width="1468" height="51" alt="imagen" src="https://github.com/user-attachments/assets/297993c6-d748-481e-9ccc-2227ef9a959e" />
+
 | 4 | `Implicit_Deny` | Any | Any | Any | Any | All | DENY | OFF |
+<img width="861" height="297" alt="imagen" src="https://github.com/user-attachments/assets/459e278e-7787-4cea-8d5f-b2e350f1cf9c" />
+
 
 ## 6. Validación y Pruebas Analíticas
 
 * **Diagnóstico de Rutas:** Ping exitoso desde el Webterm hacia su Gateway LAN (`10.24.86.1`).
+  <img width="978" height="937" alt="imagen" src="https://github.com/user-attachments/assets/414eb293-c10e-4d0c-9260-ffa1b3112260" />
+
 * **Inspección de Tráfico (Policy Lookup):** Verificación exitosa en FortiGate para tráfico TCP/443 y TCP/3389 desde `10.24.86.20` hacia la DMZ, confirmando el *match* con la política ID 1.
+  <img width="978" height="937" alt="imagen" src="https://github.com/user-attachments/assets/891b9654-33a0-4610-b81e-2462cc62bb64" />
+
 * **Prueba RDP Inter-VLAN:** Conexión de Escritorio Remoto directa y exitosa desde el Jump Server hacia el Web Server.
+  <img width="1536" height="1051" alt="imagen" src="https://github.com/user-attachments/assets/b459edcb-4d3a-4cdc-9c9b-3269974ca292" />
+
 * **Prueba de Servicio Web (RD Web):** Acceso satisfactorio al portal de aplicaciones utilizando la ruta completa `https://10.24.8.2/rdweb` tanto desde el Jump Server como desde el Webterm.
+<img width="1093" height="766" alt="imagen" src="https://github.com/user-attachments/assets/047b4962-fa6c-41e7-a47e-7e3852c264a7" />
 
 ## 7. Diagramas y Evidencias Visuales
 
 *Nota: Reemplazar estos textos por las capturas de pantalla de la práctica.*
 
-* `[IMAGEN 1: Topología de GNS3 con el cableado correcto al port 4]`
-* `[IMAGEN 2: Tabla de Políticas IPv4 en el GUI de FortiGate]`
-* `[IMAGEN 3: Resultados de la herramienta Policy Lookup mostrando el tráfico permitido]`
-* `[IMAGEN 4: Configuración IPv4 con submáscaras /29 en el entorno Windows]`
-* `[IMAGEN 5: Asignación del certificado SSL en los Bindings de IIS]`
-* `[IMAGEN 6: Acceso exitoso al Portal RD Web en el navegador del Webterm]`
+*<img width="819" height="501" alt="imagen" src="https://github.com/user-attachments/assets/f03037d4-57ad-4d4f-96e0-34e347be876b" />
+<img width="1483" height="516" alt="imagen" src="https://github.com/user-attachments/assets/66a81e04-9194-4e2f-b60f-c255247a3f97" />
+<img width="1473" height="975" alt="imagen" src="https://github.com/user-attachments/assets/b65b8158-e384-4bf5-bd0f-b9d8a32850a2" />
+<img width="1489" height="912" alt="imagen" src="https://github.com/user-attachments/assets/85d48f6c-333d-4008-bc04-3813a3de6d76" />
 
 ## 8. Running Configurations Completas
 
