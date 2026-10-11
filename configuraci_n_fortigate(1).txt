@@ -1,0 +1,86 @@
+# ====================================================================
+# ARCHIVO DE CONFIGURACION: FortiGate 7.0.9
+# ROL: Firewall Perimetral, Enrutamiento y Segmentacion
+# ====================================================================
+
+# ---------------------------------------------------
+# CONFIGURACION DE INTERFACES (Capa 3 y Subnetting)
+# ---------------------------------------------------
+config system interface
+    edit "port2"
+        set vdom "root"
+        set ip 10.24.8.1 255.255.255.248
+        set allowaccess ping https ssh
+        set type physical
+        set description "Gateway_DMZ_WebServer"
+    next
+    edit "port3"
+        set vdom "root"
+        set ip 10.24.8.9 255.255.255.248
+        set allowaccess ping https ssh
+        set type physical
+        set description "Gateway_DMZ_JumpServer"
+    next
+    edit "port4"
+        set vdom "root"
+        set ip 10.24.86.1 255.255.255.128
+        set allowaccess ping
+        set type physical
+        set description "Gateway_LAN_Usuarios"
+    next
+end
+
+# ---------------------------------------------------
+# CREACION DE OBJETOS DE RED (Direcciones IP)
+# ---------------------------------------------------
+config firewall address
+    edit "Webterm_Privilegiado"
+        set subnet 10.24.86.20 255.255.255.255
+    next
+    edit "Webterm_SinPriv"
+        set subnet 10.24.86.21 255.255.255.255
+    next
+    edit "JumpServer_IP"
+        set subnet 10.24.8.10 255.255.255.255
+    next
+    edit "WebServer_IP"
+        set subnet 10.24.8.2 255.255.255.255
+    next
+end
+
+# ---------------------------------------------------
+# POLITICAS DE SEGURIDAD (Firewall Policies)
+# ---------------------------------------------------
+config firewall policy
+    edit 1
+        set name "Acceso_Privilegiado_Jump"
+        set srcintf "port4"
+        set dstintf "port3" "port2"
+        set srcaddr "Webterm_Privilegiado"
+        set dstaddr "JumpServer_IP" "WebServer_IP"
+        set action accept
+        set schedule "always"
+        set service "HTTPS" "HTTP" "RDP"
+        set nat enable
+    next
+    edit 2
+        set name "Jump_to_Web"
+        set srcintf "port3"
+        set dstintf "port2"
+        set srcaddr "JumpServer_IP"
+        set dstaddr "WebServer_IP"
+        set action accept
+        set schedule "always"
+        set service "HTTPS" "HTTP" "RDP"
+    next
+    edit 3
+        set name "Deny_SSH_SinPrivilegios"
+        set srcintf "port4"
+        set dstintf "port3" "port2"
+        set srcaddr "Webterm_SinPriv"
+        set dstaddr "all"
+        set action deny
+        set schedule "always"
+        set service "SSH"
+    next
+end

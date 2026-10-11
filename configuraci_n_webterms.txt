@@ -1,0 +1,41 @@
+# ====================================================================
+# ARCHIVO DE CONFIGURACION: Webterms (Clientes Linux LAN)
+# ROL: Simulación de Usuarios Finales (Con/Sin Privilegios)
+# ====================================================================
+
+# ---------------------------------------------------
+# MÁQUINA 1: Webterm CON PRIVILEGIOS
+# Interfaz: eth0
+# ---------------------------------------------------
+# Comandos de asignación de red (si no se usa DHCP):
+ip addr add 10.24.86.20/25 dev eth0
+ip link set eth0 up
+
+# Configuración del Default Gateway apuntando al FortiGate (port4)
+ip route add default via 10.24.86.1
+
+# Archivo persistente simulado (/etc/network/interfaces):
+auto eth0
+iface eth0 inet static
+    address 10.24.86.20
+    netmask 255.255.255.128
+    gateway 10.24.86.1
+
+
+# ---------------------------------------------------
+# MÁQUINA 2: Webterm SIN PRIVILEGIOS
+# Interfaz: eth0
+# ---------------------------------------------------
+# Comandos de asignación de red (si no se usa DHCP):
+ip addr add 10.24.86.21/25 dev eth0
+ip link set eth0 up
+
+# Configuración del Default Gateway apuntando al FortiGate (port4)
+ip route add default via 10.24.86.1
+
+# Archivo persistente simulado (/etc/network/interfaces):
+auto eth0
+iface eth0 inet static
+    address 10.24.86.21
+    netmask 255.255.255.128
+    gateway 10.24.86.1

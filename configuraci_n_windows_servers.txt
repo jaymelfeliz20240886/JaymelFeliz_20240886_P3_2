@@ -1,0 +1,41 @@
+# ====================================================================
+# ARCHIVO DE CONFIGURACION: Windows Servers (DMZ)
+# ROL: Bastion Host (Jump) y Servidor de Aplicaciones (Web)
+# ====================================================================
+
+# ---------------------------------------------------
+# SERVIDOR 1: JUMP SERVER (Windows Server)
+# Ubicación Fija: port3 del FortiGate
+# ---------------------------------------------------
+[Configuración de Adaptador de Red IPv4]
+Dirección IP:            10.24.8.10
+Máscara de subred:       255.255.255.248
+Puerta de enlace:        10.24.8.9  (Apunta al port3 del FortiGate)
+
+[Configuraciones de Seguridad del Sistema]
+- Perfiles de Firewall de Windows (Dominio, Privado, Público): APAGADOS
+- Escritorio Remoto (RDP): ACTIVADO
+- Autenticación a Nivel de Red (NLA): DESACTIVADA
+
+
+# ---------------------------------------------------
+# SERVIDOR 2: WEB SERVER (Windows Server)
+# Ubicación Fija: port2 del FortiGate
+# ---------------------------------------------------
+[Configuración de Adaptador de Red IPv4]
+Dirección IP:            10.24.8.2
+Máscara de subred:       255.255.255.248
+Puerta de enlace:        10.24.8.1  (Apunta al port2 del FortiGate)
+
+[Configuraciones de Seguridad del Sistema]
+- Perfiles de Firewall de Windows (Dominio, Privado, Público): APAGADOS
+- Escritorio Remoto (RDP): ACTIVADO
+- Autenticación a Nivel de Red (NLA): DESACTIVADA
+
+[Configuración de IIS (Internet Information Services)]
+- Certificado de Servidor: Autofirmado (Self-Signed)
+- Site Bindings (Enlaces):
+    Tipo: https
+    Puerto: 443
+    Dirección IP: Todas las no asignadas (All Unassigned)
+    Certificado SSL: Asignado al certificado autofirmado
